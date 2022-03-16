@@ -53,7 +53,7 @@ def verify_msg(guildname, domains):
     if domains == "":
         return "{} hasn't setup this bot yet.".format(guildname)
     else: 
-        return "To verify yourself on {}, **reply here with your @{} email address**.".format(guildname, domains)
+        return "To verify your account on the {} Discord server, **reply here with your education email address**.".format(guildname, domains)
 
 def new_user(userid, guildid, email="", code=0, verified=0):
     c.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?)", (userid, guildid, email, code, verified))
@@ -140,7 +140,7 @@ def smtp_send(email_address, verification_code):
             sv.starttls()
         sv.login(user_email, smtp_pswd)
         receiver = email_address
-        msg = MIMEText(f'Your verification code is {verification_code}. Please reply to EmailBot in the discord server')
+        msg = MIMEText(f'Your verification code is {verification_code}. Please reply to the Verify Bot in the discord server')
         msg['Subject'] = 'Verify your discord server email'
         msg['From'] = user_email
         msg['To'] = receiver
@@ -154,7 +154,7 @@ client = commands.Bot(command_prefix = '.', intents=intents)
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
-    await client.change_presence(activity=discord.Game(name='.vstatus | github.com/gg2001/EmailBot'))
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="out for impostors"))
 
 @client.event
 async def on_member_join(member):
@@ -248,9 +248,9 @@ class MessageCog(commands.Cog):
                             if mailgun_email.status_code == 200:
                                 await message.channel.send("Email sent. **Reply here with your verification code**. If you haven't received it, check your spam folder.")
                             else:
-                                await message.channel.send("Email failed to send.")
+                                await message.channel.send("Email failed to send. Please try again. If the problem persists, contact the Modmail bot.")
                 else:
-                    await message.channel.send("Invalid email.")
+                    await message.channel.send("Invalid email. Please try again. If the problem persists, contact the Modmail bot.")
             else:
                 await message.channel.send("You have not joined a server.")
         elif (len(message_content) == 6) and message_content.isdigit():
@@ -283,7 +283,7 @@ class MessageCog(commands.Cog):
             else:
                 await message.channel.send("Incorrect code.")
         elif message.guild == None:
-            await message.channel.send("Invalid email.")
+            await message.channel.send("Invalid email. Please try again. If the problem persists, contact the Modmail bot.")
         # await client.process_commands(message)
 
 client.add_cog(MessageCog(client))
